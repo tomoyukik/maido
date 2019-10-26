@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CustomersController < ApplicationController
-  protect_from_forgery except: %i[show create update]
+  protect_from_forgery except: %i[show new create update]
 
   def show
     @customer = Customer.find_by uuid: params[:uuid]
@@ -23,11 +23,15 @@ class CustomersController < ApplicationController
   end
 
   def update
+    rqs = request.body.read.to_json
+    puts rqs
+    puts params
+    uuid = params[:uuid]
     @customer = Customer.find_by uuid: params[:uuid]
     @customer ||= Customer.create uuid: params[:uuid], point: Random.rand(1..100)
-    if params[:point]
+    if params[:"#{uuid}"]
       score = 0 # @customer.point
-      new_point = params[:point].to_i
+      new_point = params[:"#{uuid}"].to_i
       @customer.update(score + new_point)
     end
     render json: {
