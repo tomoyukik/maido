@@ -24,7 +24,8 @@ class CustomersController < ApplicationController
 
   def update
     rqs = request.body.read.to_json
-    puts rqs
+    json = JSON.parse rqs
+    puts json
     puts params
     uuid = params[:uuid]
     @customer = Customer.find_by uuid: params[:uuid]
