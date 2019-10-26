@@ -4,12 +4,14 @@ class CustomersController < ApplicationController
   protect_from_forgery except: %i[show new create update]
 
   def show
+    puts __method__
     @customer = Customer.find_by uuid: params[:uuid]
     @customer ||= Customer.create uuid: params[:uuid], point: Random.rand(1..100)
     render json: { point: @customer.point }
   end
 
   def new
+    puts __method__
     uuids = Customer.all.map(&:uuid)
     uuid = Random.rand(11_111..99_999)
     uuid += 1 while uuids.include? uuid
@@ -18,13 +20,16 @@ class CustomersController < ApplicationController
   end
 
   def create
+    puts __method__
     @customer = Customer.create customer_params
     render json: { customer: @customer.uuid }
   end
 
   def update
+    puts __method__
     rqs = request.body.read.to_json
     json = JSON.parse rqs
+    json = eval json
     puts json
     puts params
     uuid = params[:uuid]
