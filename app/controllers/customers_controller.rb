@@ -46,6 +46,10 @@ class CustomersController < ApplicationController
     }
   end
 
+  options do
+
+    puts 'test' * 100
+  end
   private
 
   def point
