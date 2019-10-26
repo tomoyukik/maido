@@ -5,24 +5,35 @@ class CustomersController < ApplicationController
 
   def show
     @customer = Customer.find_by uuid: params[:uuid]
-    @customer ||= Customer.create uuid: params[:uuid]
-    score = @customer.point
-    @customer.update(point: score + point) if params[:point]
-    render json: { status: 'SUCCESS', point: @customer.point }
+    @customer ||= Customer.create uuid: params[:uuid], point: Random.rand(1..100)
+    render json: { point: @customer.point }
+  end
+
+  def new
+    uuids = Customer.all.map(&:uuid)
+    uuid = Random.rand(11_111..99_999)
+    uuid += 1 while uuids.include? uuid
+    @customer = Customer.create(uuid: uuid)
+    render json: { uuid: @customer.uuid }
   end
 
   def create
     @customer = Customer.create customer_params
-    render json: { status: 'SUCCESS', customer: @customer.uuid }
+    render json: { customer: @customer.uuid }
   end
 
   def update
+    puts params
     @customer = Customer.find_by uuid: params[:uuid]
-    @customer ||= Customer.create uuid: params[:uuid]
-    new_point = params[:point]
-    @customer.point += new_point
+    @customer ||= Customer.create uuid: params[:uuid], point: Random.rand(1..100)
+    if params[:customer][:point]
+      score = @customer.point
+      new_point = params[:customer][:point].to_i
+      @customer.update(score + new_point)
+    end
     render json: {
-      status: 'SUCCESS', customer: @customer.uuid, point: @customer.point
+      customer: @customer.uuid,
+      point: @customer.point
     }
   end
 
