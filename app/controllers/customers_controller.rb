@@ -23,12 +23,11 @@ class CustomersController < ApplicationController
   end
 
   def update
-    puts params
     @customer = Customer.find_by uuid: params[:uuid]
     @customer ||= Customer.create uuid: params[:uuid], point: Random.rand(1..100)
-    if params[:customer][:point]
-      score = @customer.point
-      new_point = params[:customer][:point].to_i
+    if params[:point]
+      score = 0 # @customer.point
+      new_point = params[:point].to_i
       @customer.update(score + new_point)
     end
     render json: {
