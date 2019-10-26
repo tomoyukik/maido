@@ -4,7 +4,7 @@ class CreateCustomers < ActiveRecord::Migration[6.0]
   def change
     create_table :customers do |t|
       t.integer :uuid, unique: true
-      t.integer :point
+      t.integer :point, default: 0
 
       t.timestamps
     end
