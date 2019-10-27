@@ -3,6 +3,9 @@
 class CustomersController < ApplicationController
   protect_from_forgery except: %i[show new create update]
 
+  ACCESS_CONTROL_ALLOW_METHODS = %w(GET OPTIONS).freeze
+  ACCESS_CONTROL_ALLOW_HEADERS = %w(Accept Origin Content-Type Authorization).freeze
+
   def show
     puts __method__
     @customer = Customer.find_by uuid: params[:uuid]
@@ -46,7 +49,18 @@ class CustomersController < ApplicationController
     }
   end
 
+  def preflight
+    set_preflight_headers!
+    head :ok
+  end
+
   private
+
+  def set_preflight_headers!
+    response.headers['Access-Control-Max-Age'] = ACCESS_CONTROL_MAX_AGE
+    response.headers['Access-Control-Allow-Headers'] = ACCESS_CONTROL_ALLOW_HEADERS.join(',')
+    response.headers['Access-Control-Allow-Methods'] = ACCESS_CONTROL_ALLOW_METHODS.join(',')
+  end
 
   def point
     params[:point] ? params[:point].to_i : 0
