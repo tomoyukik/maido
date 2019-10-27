@@ -48,7 +48,7 @@ class CustomersController < ApplicationController
         point_added: true
       )
     current = @customer.point
-    if params[:customer][:point]
+    if params[:customer] && params[:customer][:point]
       @customer.update(point: current + params[:customer][:point].to_i)
     elsif !@customer.point_added
       @customer.update(point: current + 10, point_added: true)
