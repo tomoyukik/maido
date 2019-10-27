@@ -40,9 +40,11 @@ class CustomersController < ApplicationController
   def update
     Rails.logger.debug __method__
     rqs = request.body.read.to_json
+    Rails.logger "request body: #{json}"
     json = JSON.parse rqs
+    Rails.logger "parsed json: #{json}"
     json = eval json
-    Rails.logger.debug "json: #{json}"
+    Rails.logger.debug "evaled json: #{json}"
     Rails.logger.debug "params: #{params}"
     @customer = Customer.find_by uuid: params[:uuid]
     @customer ||=
