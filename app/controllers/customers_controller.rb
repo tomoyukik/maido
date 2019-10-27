@@ -40,13 +40,13 @@ class CustomersController < ApplicationController
 
   def update
     Rails.logger.debug __method__
-    rqs = request.body.read.to_json
-    Rails.logger "request body: #{json}"
-    json = JSON.parse rqs
-    Rails.logger "parsed json: #{json}"
-    json = eval json
-    Rails.logger.debug "evaled json: #{json}"
-    Rails.logger.debug "params: #{params}"
+    # rqs = request.body.read.to_json
+    # Rails.logger "request body: #{rqs}"
+    # json = JSON.parse rqs
+    # Rails.logger "parsed json: #{json}"
+    # json = eval json
+    # Rails.logger.debug "evaled json: #{json}"
+    # Rails.logger.debug "params: #{params}"
     @customer = Customer.find_by uuid: params[:uuid]
     @customer ||=
       Customer.create(
@@ -60,8 +60,8 @@ class CustomersController < ApplicationController
     #   @customer.update(score + new_point)
     # end
     current = @customer.point
-    if json && json['point']
-      @customer.update(point: current + json['point'])
+    if params[:customer][:point]
+      @customer.update(point: current + params[:customer][:point].to_s)
     elsif !@customer.point_added
       @customer.update(point: current + 10, point_added: true)
     end
