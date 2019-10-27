@@ -27,7 +27,7 @@ class CustomersController < ApplicationController
     uuid = Random.rand(11_111..99_999)
     uuid += 1 while uuids.include? uuid
     @customer = Customer.create(uuid: uuid)
-    hit = choose
+    hit = choose ? 1 : 0
     @customer.update(point: 300) if hit
     render json: { uuid: @customer.uuid, hit: hit }
   end
@@ -80,7 +80,7 @@ class CustomersController < ApplicationController
     params.require(:customer).permit(:uuid, :point)
   end
 
-  def choose(weight = 10)
+  def choose(weight = 50)
     rand <= weight / 100.0
   end
 end
