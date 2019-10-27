@@ -3,8 +3,11 @@
 class CustomersController < ApplicationController
   protect_from_forgery except: %i[show new create update]
 
-  ACCESS_CONTROL_ALLOW_METHODS = %w(GET OPTIONS).freeze
-  ACCESS_CONTROL_ALLOW_HEADERS = %w(Accept Origin Content-Type Authorization).freeze
+  ACCESS_CONTROL_ALLOW_METHODS = %w[GET OPTIONS].freeze
+  ACCESS_CONTROL_ALLOW_HEADERS = %w[Accept Origin Content-Type Authorization].freeze
+  ACCESS_CONTROL_MAX_AGE = '1728000'
+
+  skip_before_action :verify_authenticity_token, only: %i[preflight]
 
   def show
     puts __method__
