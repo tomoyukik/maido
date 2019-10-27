@@ -10,42 +10,45 @@ class CustomersController < ApplicationController
   skip_before_action :verify_authenticity_token, only: %i[preflight]
 
   def show
-    puts __method__
+    Rails.logger.debug __method__
     @customer = Customer.find_by uuid: params[:uuid]
     @customer ||= Customer.create uuid: params[:uuid], point: Random.rand(1..100)
     render json: { point: @customer.point }
   end
 
   def new
-    puts __method__
+    Rails.logger.debug __method__
     uuids = Customer.all.map(&:uuid)
     uuid = Random.rand(11_111..99_999)
     uuid += 1 while uuids.include? uuid
     @customer = Customer.create(uuid: uuid)
-    render json: { uuid: @customer.uuid }
+    hit = choose
+    @customer.update(point: 300)
+    render json: { uuid: @customer.uuid, hit: hit }
   end
 
   def create
-    puts __method__
+    Rails.logger.debug __method__
     @customer = Customer.create customer_params
     render json: { customer: @customer.uuid }
   end
 
   def update
-    puts __method__
+    Rails.logger.debug __method__
     rqs = request.body.read.to_json
     json = JSON.parse rqs
     json = eval json
-    puts json
-    puts params
-    uuid = params[:uuid]
+    Rails.logger.debug "json: #{json}"
+    Rails.logger.debug "params: #{params}"
     @customer = Customer.find_by uuid: params[:uuid]
     @customer ||= Customer.create uuid: params[:uuid], point: Random.rand(1..100)
-    if params[:"#{uuid}"]
-      score = 0 # @customer.point
-      new_point = params[:"#{uuid}"].to_i
-      @customer.update(score + new_point)
-    end
+    # if params[:"#{uuid}"]
+    #   score = 0 # @customer.point
+    #   new_point = params[:"#{uuid}"].to_i
+    #   @customer.update(score + new_point)
+    # end
+    current = @customer.point
+    @customer.update(point: current + 10)
     render json: {
       customer: @customer.uuid,
       point: @customer.point
@@ -71,5 +74,9 @@ class CustomersController < ApplicationController
 
   def customer_params
     params.require(:customer).permit(:uuid, :point)
+  end
+
+  def choose(weight = 10)
+    rand <= weight / 100.0
   end
 end
