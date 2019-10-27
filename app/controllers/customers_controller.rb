@@ -27,7 +27,8 @@ class CustomersController < ApplicationController
     uuid = Random.rand(11_111..99_999)
     uuid += 1 while uuids.include? uuid
     @customer = Customer.create(uuid: uuid)
-    @customer.update(point: 300) if choose
+    hit = choose
+    @customer.update(point: 300) if hit
     render json: { uuid: @customer.uuid, hit: hit }
   end
 
