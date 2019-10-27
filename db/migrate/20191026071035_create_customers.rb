@@ -6,6 +6,8 @@ class CreateCustomers < ActiveRecord::Migration[6.0]
       t.integer :uuid, unique: true
       t.integer :point, default: 0
 
+      t.index :uuid
+
       t.timestamps
     end
   end

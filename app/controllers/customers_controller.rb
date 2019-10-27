@@ -12,7 +12,12 @@ class CustomersController < ApplicationController
   def show
     Rails.logger.debug __method__
     @customer = Customer.find_by uuid: params[:uuid]
-    @customer ||= Customer.create uuid: params[:uuid], point: Random.rand(1..100)
+    @customer ||=
+      Customer.create(
+        uuid: params[:uuid],
+        point: Random.rand(1..100),
+        point_added: true
+      )
     render json: { point: @customer.point }
   end
 
@@ -22,8 +27,7 @@ class CustomersController < ApplicationController
     uuid = Random.rand(11_111..99_999)
     uuid += 1 while uuids.include? uuid
     @customer = Customer.create(uuid: uuid)
-    hit = choose
-    @customer.update(point: 300)
+    @customer.update(point: 300) if choose
     render json: { uuid: @customer.uuid, hit: hit }
   end
 
@@ -41,17 +45,22 @@ class CustomersController < ApplicationController
     Rails.logger.debug "json: #{json}"
     Rails.logger.debug "params: #{params}"
     @customer = Customer.find_by uuid: params[:uuid]
-    @customer ||= Customer.create uuid: params[:uuid], point: Random.rand(1..100)
+    @customer ||=
+      Customer.create(
+        uuid: params[:uuid],
+        point: Random.rand(1..100),
+        point_added: true
+      )
     # if params[:"#{uuid}"]
     #   score = 0 # @customer.point
     #   new_point = params[:"#{uuid}"].to_i
     #   @customer.update(score + new_point)
     # end
     current = @customer.point
-    if json['point']
+    if json && json['point']
       @customer.update(point: current + json['point'])
     elsif !@customer.point_added
-      @customer.update(point: current + 10)
+      @customer.update(point: current + 10, point_added: true)
     end
     render json: {
       customer: @customer.uuid,
