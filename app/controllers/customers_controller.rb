@@ -48,7 +48,11 @@ class CustomersController < ApplicationController
     #   @customer.update(score + new_point)
     # end
     current = @customer.point
-    @customer.update(point: current + 10)
+    if json['point']
+      @customer.update(point: current + json['point'])
+    elsif !@customer.point_added
+      @customer.update(point: current + 10)
+    end
     render json: {
       customer: @customer.uuid,
       point: @customer.point
